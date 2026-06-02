@@ -1,0 +1,61 @@
+<uiView onFlickDown="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');" onFlickUp="$.put('/Zapp/{zapp_index}/Event', 3, null, 'int32');">
+  <div style="background-color:#111111; width:100%; height:100%; position:absolute; top:0; left:0;">
+
+      <!-- Title -->
+      <div class="sp-t-s p-hc" style="top:calc(12% - 50%e); color:#FFE322; position:absolute;">DEBUG DIAGNOSTICS</div>
+
+      <!-- ROW 1: State and Time -->
+      <div class="f-s sp-vertical-center" style="top:calc(18% - 50%e); left:calc(25% - 50%e); color:#FFFFFF; position:absolute;">ESTADO</div>
+      <div class="f-num sp-vertical-center" style="top:calc(26% - 50%e); left:calc(25% - 50%e); color:#FFFFFF; font-size:20px; position:absolute;">
+          <eval input="/Zapp/{zapp_index}/Output/stateNum" outputFormat="script x => x" default="0"/>
+      </div>
+
+      <div class="f-s sp-vertical-center" style="top:calc(18% - 50%e); left:calc(75% - 50%e); color:#FFFFFF; position:absolute;">TIEMPO</div>
+      <div class="f-num sp-vertical-center" style="top:calc(26% - 50%e); left:calc(75% - 50%e); color:#FFFFFF; font-size:20px; position:absolute;">
+          <eval input="/Zapp/{zapp_index}/Output/timeRemaining" outputFormat="Duration_FourdigitsFixed" default="0:00"/>
+      </div>
+
+      <!-- ROW 2: Mode and ZoneSense Status -->
+      <div class="f-s sp-vertical-center" style="top:calc(36% - 50%e); left:calc(25% - 50%e); color:#FFFFFF; position:absolute;">MODO</div>
+      <div class="f-num sp-vertical-center" style="top:calc(44% - 50%e); left:calc(25% - 50%e); color:#FFE322; font-size:18px; position:absolute;">
+          <eval input="/Zapp/{zapp_index}/Output/testModeNum" outputFormat="script x => x === 1 ? 'ADVANCED' : 'STANDARD'" default="ADVANCED" />
+      </div>
+
+      <div class="f-s sp-vertical-center" style="top:calc(36% - 50%e); left:calc(75% - 50%e); color:#FFFFFF; position:absolute;">DFA a1</div>
+      <div class="f-num sp-vertical-center" style="top:calc(44% - 50%e); left:calc(75% - 50%e); color:#FFE322; font-size:18px; position:absolute;">
+          <eval input="/Zapp/{zapp_index}/Output/dfaCurrent" outputFormat="script x => x > 0 ? (x / 100).toFixed(2) : '--'" default="--" />
+      </div>
+
+      <!-- ROW 3: Thresholds Detected (LT1 / LT2) -->
+      <!-- LT1 -->
+      <div class="f-s sp-vertical-center" style="top:calc(54% - 50%e); left:calc(25% - 50%e); color:#00FF78; position:absolute;">LT1 (Aero)</div>
+      <div class="f-num sp-vertical-center" style="top:calc(64% - 50%e); left:calc(25% - 50%e); color:#00FF78; font-size:22px; position:absolute;">
+          <eval input="/Zapp/{zapp_index}/Output/lt1HR" outputFormat="HeartRate_Fourdigits" default="--"/>
+      </div>
+      <div class="f-num sp-vertical-center" style="top:calc(74% - 50%e); left:calc(25% - 50%e); color:#00FF78; font-size:18px; position:absolute;">
+          <eval input="/Zapp/{zapp_index}/Output/lt1Pace" outputFormat="Pace_Fourdigits" default="--:--"/>
+      </div>
+
+      <!-- LT2 -->
+      <div class="f-s sp-vertical-center" style="top:calc(54% - 50%e); left:calc(75% - 50%e); color:#FF2A55; position:absolute;">LT2 (Ank)</div>
+      <div class="f-num sp-vertical-center" style="top:calc(64% - 50%e); left:calc(75% - 50%e); color:#FF2A55; font-size:22px; position:absolute;">
+          <eval input="/Zapp/{zapp_index}/Output/lt2HR" outputFormat="HeartRate_Fourdigits" default="--"/>
+      </div>
+      <div class="f-num sp-vertical-center" style="top:calc(74% - 50%e); left:calc(75% - 50%e); color:#FF2A55; font-size:18px; position:absolute;">
+          <eval input="/Zapp/{zapp_index}/Output/lt2Pace" outputFormat="Pace_Fourdigits" default="--:--"/>
+      </div>
+
+      <div class="f-s p-hc" style="top:calc(82% - 50%e); color:#AAAAAA; font-size:12px; position:absolute;">(Deslizar arriba para alternar modo)</div>
+      <div class="f-s p-hc" style="top:calc(88% - 50%e); color:#AAAAAA; font-size:12px; position:absolute;">(Botón SUPERIOR o CENTRAL para volver)</div>
+
+      <!-- Button Navigation -->
+      <userInput>
+          <pushButton name="next" type="lock" longType="lock"
+              onClick="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');"
+              onLongPressStart="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');" />
+          <pushButton name="up" type="lock" longType="lock"
+              onClick="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');"
+              onLongPressStart="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');" />
+      </userInput>
+  </div>
+</uiView>

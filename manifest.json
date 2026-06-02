@@ -1,0 +1,104 @@
+{
+  "name": "Dual Threshold",
+  "version": "1.0",
+  "author": "Oscar Muñoz Ferriz",
+  "description": "Guided LT1/LT2 lactate threshold test",
+  "type": "feature",
+  "usage": "workout",
+  "modificationTime": 1779204972,
+  "in": [
+    {
+      "name": "HeartRate",
+      "source": "/Activity/Move/-1/Heartrate/Current",
+      "type": "subscribe"
+    },
+    {
+      "name": "Speed",
+      "source": "/Activity/Current/Speed",
+      "type": "subscribe"
+    },
+    {
+      "name": "Power",
+      "source": "/Activity/Current/Power3s",
+      "type": "subscribe"
+    },
+    {
+      "name": "MaxHR",
+      "source": "/Settings/User/MaxHR",
+      "type": "get"
+    }
+  ],
+  "out": [
+    {
+      "name": "hrTargetNum",
+      "log": false,
+      "shownName": "HR Target Range"
+    },
+    {
+      "name": "stateNum",
+      "log": false,
+      "shownName": "State Index"
+    },
+    {
+      "name": "timeRemaining",
+      "log": false,
+      "shownName": "Time Remaining"
+    },
+    {
+      "name": "lt1HR",
+      "log": true,
+      "shownName": "LT1 HR",
+      "format": "HeartRate_Fourdigits"
+    },
+    {
+      "name": "lt2HR",
+      "log": true,
+      "shownName": "LT2 HR",
+      "format": "HeartRate_Fourdigits"
+    },
+    {
+      "name": "lt1Pace",
+      "log": true,
+      "shownName": "LT1 Pace",
+      "format": "Pace_Fourdigits"
+    },
+    {
+      "name": "lt2Pace",
+      "log": true,
+      "shownName": "LT2 Pace",
+      "format": "Pace_Fourdigits"
+    },
+    {
+      "name": "lt2Power",
+      "log": true,
+      "shownName": "LT2 Power",
+      "format": "Power_Fourdigits"
+    },
+    {
+      "name": "zsActiveNum",
+      "log": false,
+      "shownName": "ZoneSense Active"
+    },
+    {
+      "name": "testModeNum",
+      "log": false,
+      "shownName": "Test Mode"
+    },
+    {
+      "name": "dfaCurrent",
+      "log": false,
+      "shownName": "Current DFA a1"
+    }
+  ],
+  "template": [
+    {
+      "name": "t.html"
+    },
+    {
+      "name": "debug.html"
+    },
+    {
+      "name": "results.html"
+    }
+  ]
+}
