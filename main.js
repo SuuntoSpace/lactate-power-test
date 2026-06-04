@@ -8,8 +8,9 @@ var STATE_WARMUP, STATE_STAGE_1, STATE_STAGE_2, STATE_STAGE_3, STATE_STAGE_4,
   STATE_COOLDOWN, STATE_DONE, state, timeInState, maxHR,
   WARMUP_DUR, STAGE_1_DUR, STAGE_2_DUR, STAGE_3_DUR, STAGE_4_DUR, COOLDOWN_DUR,
   lt1_hr, lt1_pace, lt2_hr, lt2_pace, lt2_power, currentTemplate, uiLoaded,
-  h1_hrSum, h1_spdSum, h1_count, h2_hrSum, h2_spdSum, h2_count, stage_results,
-  zs_active, testModeNum, dfa_current, debugTimer, stageDurIndex, lt1_detected, lt2_detected;
+  h1_hrSum, h1_spdSum, h1_count, h1_spdCount, h2_hrSum, h2_spdSum, h2_count, h2_spdCount, stage_results,
+  zs_active, testModeNum, dfa_current, debugTimer, stageDurIndex, lt1_detected, lt2_detected,
+  h3_pwrSum, h3_pwrCount, isPaused;
 
 function onLoad(input, output) {
   STATE_WARMUP = 0;
@@ -39,8 +40,9 @@ function onLoad(input, output) {
   lt2_pace = 0;
   lt2_power = 0;
 
-  h1_hrSum = 0; h1_spdSum = 0; h1_count = 0;
-  h2_hrSum = 0; h2_spdSum = 0; h2_count = 0;
+  h1_hrSum = 0; h1_spdSum = 0; h1_count = 0; h1_spdCount = 0;
+  h2_hrSum = 0; h2_spdSum = 0; h2_count = 0; h2_spdCount = 0;
+  h3_pwrSum = 0; h3_pwrCount = 0;
   stage_results = [];
 
   zs_active = 0;
@@ -49,6 +51,7 @@ function onLoad(input, output) {
   debugTimer = 0;
   lt1_detected = false;
   lt2_detected = false;
+  isPaused = 0;
 }
 
 function onExerciseStart(input, output) {
@@ -56,8 +59,9 @@ function onExerciseStart(input, output) {
   timeInState = 0;
   currentTemplate = 't';
 
-  h1_hrSum = 0; h1_spdSum = 0; h1_count = 0;
-  h2_hrSum = 0; h2_spdSum = 0; h2_count = 0;
+  h1_hrSum = 0; h1_spdSum = 0; h1_count = 0; h1_spdCount = 0;
+  h2_hrSum = 0; h2_spdSum = 0; h2_count = 0; h2_spdCount = 0;
+  h3_pwrSum = 0; h3_pwrCount = 0;
   stage_results = [];
 
   zs_active = 0;
@@ -67,6 +71,7 @@ function onExerciseStart(input, output) {
   stageDurIndex = 0;
   lt1_detected = false;
   lt2_detected = false;
+  isPaused = 0;
 
   WARMUP_DUR = 60;
   STAGE_1_DUR = 60;
@@ -121,26 +126,28 @@ var accumulateDecoupling = function (input, stageDur) {
     if (input.HeartRate > 0) {
       h1_hrSum += input.HeartRate;
       h1_count++;
-      if (input.Speed && input.Speed > 0) {
-        h1_spdSum += input.Speed;
-      }
+    }
+    if (input.Speed && input.Speed > 0) {
+      h1_spdSum += input.Speed;
+      h1_spdCount++;
     }
   } else {
     if (input.HeartRate > 0) {
       h2_hrSum += input.HeartRate;
       h2_count++;
-      if (input.Speed && input.Speed > 0) {
-        h2_spdSum += input.Speed;
-      }
+    }
+    if (input.Speed && input.Speed > 0) {
+      h2_spdSum += input.Speed;
+      h2_spdCount++;
     }
   }
 };
 
 var saveStageResult = function (stageIndex) {
   var avg_hr1 = h1_count > 0 ? h1_hrSum / h1_count : 0;
-  var avg_spd1 = h1_count > 0 ? h1_spdSum / h1_count : 0;
+  var avg_spd1 = h1_spdCount > 0 ? h1_spdSum / h1_spdCount : 0;
   var avg_hr2 = h2_count > 0 ? h2_hrSum / h2_count : 0;
-  var avg_spd2 = h2_count > 0 ? h2_spdSum / h2_count : 0;
+  var avg_spd2 = h2_spdCount > 0 ? h2_spdSum / h2_spdCount : 0;
 
   var ef1 = avg_hr1 > 0 ? avg_spd1 / avg_hr1 : 0;
   var ef2 = avg_hr2 > 0 ? avg_spd2 / avg_hr2 : 0;
@@ -160,6 +167,7 @@ var saveStageResult = function (stageIndex) {
 
 var calculateThresholds = function () {
   var foundLT1 = false;
+  var foundLT2 = false;
   for (var i = 0; i < stage_results.length; i++) {
     var sr = stage_results[i];
     if (!foundLT1 && (sr.dec > 5.0 || i === 1)) {
@@ -167,15 +175,29 @@ var calculateThresholds = function () {
       lt1_pace = sr.pace;
       foundLT1 = true;
     }
-    if (sr.dec > 10.0 || i === stage_results.length - 1) {
+    if (!foundLT2 && (sr.dec > 10.0 || i === stage_results.length - 1)) {
       lt2_hr = sr.hr;
       lt2_pace = sr.pace;
+      foundLT2 = true;
     }
+  }
+  if (lt2_hr < lt1_hr) {
+    lt2_hr = lt1_hr;
+    lt2_pace = lt1_pace;
   }
 };
 
+function onExercisePause(input, output) {
+  isPaused = 1;
+}
+
+function onExerciseContinue(input, output) {
+  isPaused = 0;
+}
+
 function evaluate(input, output) {
   if (state === undefined) return;
+  if (isPaused === 1) return;
 
   if (currentTemplate === 'debug') {
     debugTimer++;
@@ -191,7 +213,11 @@ function evaluate(input, output) {
   timeInState++;
 
   if (input.MaxHR && input.MaxHR > 0) {
-    maxHR = input.MaxHR;
+    if (input.MaxHR < 10) {
+      maxHR = input.MaxHR * 60;
+    } else {
+      maxHR = input.MaxHR;
+    }
   }
 
   var targetLow = 0, targetHigh = 0;
@@ -239,9 +265,13 @@ function evaluate(input, output) {
       stepLabel = "3/4";
       timeRem = STAGE_3_DUR - timeInState;
       accumulateDecoupling(input, STAGE_3_DUR);
+      if (input.Power && input.Power > 0) {
+        h3_pwrSum += input.Power;
+        h3_pwrCount++;
+      }
       if (timeInState >= STAGE_3_DUR) {
         saveStageResult(3);
-        lt2_power = (input.Power && input.Power > 0) ? input.Power : 0;
+        lt2_power = h3_pwrCount > 0 ? Math.round(h3_pwrSum / h3_pwrCount) : 0;
         shouldAdvance = true;
       }
       break;
@@ -280,8 +310,9 @@ function evaluate(input, output) {
   if (shouldAdvance) {
     state++;
     timeInState = 0;
-    h1_hrSum = 0; h1_spdSum = 0; h1_count = 0;
-    h2_hrSum = 0; h2_spdSum = 0; h2_count = 0;
+    h1_hrSum = 0; h1_spdSum = 0; h1_count = 0; h1_spdCount = 0;
+    h2_hrSum = 0; h2_spdSum = 0; h2_count = 0; h2_spdCount = 0;
+    h3_pwrSum = 0; h3_pwrCount = 0;
   }
 
   output.stateNum = state;
@@ -289,14 +320,17 @@ function evaluate(input, output) {
   output.hrTargetNum = encodedTargets;
   output.timeRemaining = timeRem;
 
-  output.lt1HR = Math.round(lt1_hr);
-  output.lt2HR = Math.round(lt2_hr);
   output.testModeNum = 0; // Statically 0 (Standard only)
-  output.lt1Pace = lt1_pace;
-  output.lt2Pace = lt2_pace;
-  output.lt2Power = lt2_power;
   output.dfaCurrent = 0; // ZoneSense removed
   output.zsActiveNum = 0; // ZoneSense removed
+
+  if (state === STATE_COOLDOWN || state === STATE_DONE) {
+    output.lt1HR = Math.round(lt1_hr * 60) / 60;
+    output.lt2HR = Math.round(lt2_hr * 60) / 60;
+    output.lt1Pace = lt1_pace;
+    output.lt2Pace = lt2_pace;
+    output.lt2Power = lt2_power;
+  }
 }
 
 function getUserInterface(input, output) {

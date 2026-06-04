@@ -8,10 +8,7 @@
             </div>
         </div>
 
-        <!-- 2. Mode Label: ZONAS FC or ZONESENSE -->
-        <div class="f-s p-hc" style="top:calc(19% - 50%e); font-size:11px; font-weight:bold; color:#00FF78; position:absolute;">
-            <eval input="/Zapp/{zapp_index}/Output/testModeNum" outputFormat="script x => x === 1 ? '- ZONESENSE -' : ''" default="               " />
-        </div>
+        <!-- 2. Mode Label: ZONAS FC -->
         <div class="f-s p-hc" style="top:calc(19% - 50%e); font-size:11px; font-weight:bold; color:#FFE322; position:absolute;">
             <eval input="/Zapp/{zapp_index}/Output/testModeNum" outputFormat="script x => x === 0 ? '- ZONAS FC -' : ''" default="               " />
         </div>
@@ -22,12 +19,13 @@
         </div>
 
         <!-- 4. Recommended HR Label -->
-        <div class="f-s cm-mid p-hc" style="top:calc(40% - 50%e); position:absolute;">Recommended heart rate</div>
+        <div class="f-s cm-mid p-hc" style="top:calc(36% - 50%e); position:absolute;">Recommended heart rate</div>
 
         <!-- 5. Pace (Left side) -->
         <!-- Value -->
         <div class="sp-vertical-center" style="top:calc(50% - 50%e); left:calc(30% - 50%e); position:absolute;">
-            <span class="f-num" style="font-size:28px;">
+            <span class="f-ico" style="color:#00FF78;">&#xF103;</span>
+            <span class="f-num" style="font-size:28px; margin-left:4px;">
                 <eval input="/Activity/Current/Speed" outputFormat="Pace_Fourdigits" default="--:--" />
             </span>
         </div>
@@ -37,7 +35,7 @@
         <!-- 6. Current HR (Right side) -->
         <!-- Value -->
         <div class="sp-vertical-center" style="top:calc(50% - 50%e); left:calc(70% - 50%e); position:absolute;">
-            <span class="f-ico" style="color:#FF2A55; font-size:22px;">&#xF101;</span>
+            <span class="f-ico" style="color:#FF2A55;">&#xF101;</span>
             <span class="f-num" style="font-size:28px; margin-left:4px;">
                 <eval input="/Activity/Move/-1/Heartrate/Current" outputFormat="HeartRate_Fourdigits" default="--" />
             </span>
