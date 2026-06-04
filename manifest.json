@@ -30,6 +30,21 @@
   ],
   "out": [
     {
+      "name": "lt1HR"
+    },
+    {
+      "name": "lt2HR"
+    },
+    {
+      "name": "lt1Pace"
+    },
+    {
+      "name": "lt2Pace"
+    },
+    {
+      "name": "lt2Power"
+    },
+    {
       "name": "hrTargetNum",
       "log": false,
       "shownName": "HR Target Range"
@@ -43,41 +58,6 @@
       "name": "timeRemaining",
       "log": false,
       "shownName": "Time Remaining"
-    },
-    {
-      "name": "lt1HR",
-      "log": true,
-      "shownName": "LT1 HR",
-      "format": "HeartRate_Fourdigits"
-    },
-    {
-      "name": "lt2HR",
-      "log": true,
-      "shownName": "LT2 HR",
-      "format": "HeartRate_Fourdigits"
-    },
-    {
-      "name": "lt1Pace",
-      "log": true,
-      "shownName": "LT1 Pace",
-      "format": "Pace_Fourdigits"
-    },
-    {
-      "name": "lt2Pace",
-      "log": true,
-      "shownName": "LT2 Pace",
-      "format": "Pace_Fourdigits"
-    },
-    {
-      "name": "lt2Power",
-      "log": true,
-      "shownName": "LT2 Power",
-      "format": "Power_Fourdigits"
-    },
-    {
-      "name": "zsActiveNum",
-      "log": false,
-      "shownName": "ZoneSense Active"
     },
     {
       "name": "testModeNum",

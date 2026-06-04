@@ -310,7 +310,6 @@ function evaluate(input, output) {
 
   output.testModeNum = 0; // Statically 0 (Standard only)
   output.dfaCurrent = 0; // ZoneSense removed
-  output.zsActiveNum = 0; // ZoneSense removed
 
   if (state === STATE_COOLDOWN || state === STATE_DONE) {
     output.lt1HR = Math.round(lt1_hr * 60) / 60;
@@ -330,39 +329,28 @@ function getUserInterface(input, output) {
 function getSummaryOutputs(input, output) {
   return [
     {
-      id: 'lt1_hr',
+      id: 'lt1HR',
       name: "LT1 HR",
       format: 'HeartRate_Fourdigits',
-      //value: lt1_hr
       value: output.lt1HR
     },
     {
-      id: 'lt1_pace',
-      name: "LT1 Pace",
-      format: 'Pace_Fourdigits',
-      //value: lt1_pace
-      value: output.lt1Pace
-    },
-    {
-      id: 'lt2_hr',
+      id: 'lt2HR',
       name: "LT2 HR",
       format: 'HeartRate_Fourdigits',
-      //value: lt2_hr
       value: output.lt2HR
     },
     {
-      id: 'lt2_pace',
-      name: "LT2 Pace",
+      id: 'lt1Pace',
+      name: "LT1 Pace",
       format: 'Pace_Fourdigits',
-      //value: lt2_pace
-      value: output.lt2Pace
+      value: output.lt1Pace
     },
     {
-      id: 'lt2_power',
-      name: "LT2 Power",
-      format: 'Power_Fourdigits',
-      //value: lt2_power
-      value: output.lt2Power
+      id: 'lt2Pace',
+      name: "LT2 Pace",
+      format: 'Pace_Fourdigits',
+      value: output.lt2Pace
     }
   ];
 }
