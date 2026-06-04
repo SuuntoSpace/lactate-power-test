@@ -31,7 +31,7 @@ function onLoad(input, output) {
   STAGE_1_DUR = 600;
   STAGE_2_DUR = 600;
   STAGE_3_DUR = 600;
-  STAGE_4_DUR = 600;
+  STAGE_4_DUR = 300;
   COOLDOWN_DUR = 300;
 
   lt1_hr = 0;
@@ -77,7 +77,7 @@ function onExerciseStart(input, output) {
   STAGE_1_DUR = 600;
   STAGE_2_DUR = 600;
   STAGE_3_DUR = 600;
-  STAGE_4_DUR = 600;
+  STAGE_4_DUR = 300;
   COOLDOWN_DUR = 300;
 }
 
@@ -333,31 +333,36 @@ function getSummaryOutputs(input, output) {
       id: 'lt1_hr',
       name: "LT1 HR",
       format: 'HeartRate_Fourdigits',
-      value: lt1_hr
+      //value: lt1_hr
+      value: output.lt1HR
     },
     {
       id: 'lt1_pace',
       name: "LT1 Pace",
       format: 'Pace_Fourdigits',
-      value: lt1_pace
+      //value: lt1_pace
+      value: output.lt1Pace
     },
     {
       id: 'lt2_hr',
       name: "LT2 HR",
       format: 'HeartRate_Fourdigits',
-      value: lt2_hr
+      //value: lt2_hr
+      value: output.lt2HR
     },
     {
       id: 'lt2_pace',
       name: "LT2 Pace",
       format: 'Pace_Fourdigits',
-      value: lt2_pace
+      //value: lt2_pace
+      value: output.lt2Pace
     },
     {
       id: 'lt2_power',
       name: "LT2 Power",
       format: 'Power_Fourdigits',
-      value: lt2_power
+      //value: lt2_power
+      value: output.lt2Power
     }
   ];
 }

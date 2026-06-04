@@ -14,11 +14,11 @@ El protocolo consta de 6 bloques guiados estructurados para elevar la intensidad
 2. **Fase 1 (Línea base):** 10 minutos al 65% - 76% de `MaxHR`. Objetivo: Establecer la base fisiológica por debajo del LT1.
 3. **Fase 2 (Detección LT1):** 10 minutos al 72% - 84% de `MaxHR`. Objetivo: Cruzar el umbral aeróbico y detectar el desacoplamiento de ritmo/pulso.
 4. **Fase 3 (Detección LT2 y Potencia):** 10 minutos al 80% - 91% de `MaxHR`. Objetivo: Entrar en la zona de inestabilidad y registrar el umbral anaeróbico.
-5. **Fase 4 (Validación LT2):** 10 minutos al 87% - 100% de `MaxHR`. Objetivo: Confirmar el LT2 bajo máximo estrés metabólico.
+5. **Fase 4 (Validación LT2):** 5 minutos al 87% - 100% de `MaxHR`. Objetivo: Confirmar el LT2 bajo máximo estrés metabólico.
 6. **Cool Down (Enfriamiento):** 5 minutos suaves al 50% - 64% de `MaxHR`.
 
 > [!NOTE]
-> Las duraciones del test están fijadas permanentemente a **10 minutos por etapa (5 minutos para el Cool Down)** para garantizar que el algoritmo acumule suficientes muestras estables. El botón inferior (DOWN) no altera los tiempos en producción, preservando su comportamiento nativo en el reloj.
+> Las duraciones del test están fijadas permanentemente (**10 minutos para Calentamiento y Fases 1-3, y 5 minutos para la Fase 4 y Cool Down**) para garantizar que el algoritmo acumule suficientes muestras estables. El botón inferior (DOWN) no altera los tiempos en producción, preservando su comportamiento nativo en el reloj.
 
 ---
 
@@ -32,7 +32,7 @@ Para mayor claridad sobre el comportamiento interno de la aplicación, a continu
   * **Fase 1 (Estable 1/4):** 10 minutos (600s).
   * **Fase 2 (Estable 2/4):** 10 minutos (600s).
   * **Fase 3 (Estable 3/4):** 10 minutos (600s).
-  * **Fase 4 (Peak Stage 4/4):** 10 minutos (600s).
+  * **Fase 4 (Peak Stage 4/4):** 5 minutos (300s).
   * **Cool Down:** 5 minutos (300s).
   * *Nota: La opción de cambiar la duración con el botón físico inferior (DOWN) está eliminada en producción para evitar invalidar el protocolo del test.*
 * **Porcentajes de Frecuencia Cardíaca Recomendada:**
