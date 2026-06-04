@@ -1,3 +1,9 @@
+// ==========================================
+// CONFIGURACIÓN DE LA APP
+// ==========================================
+// Cambiar a 1 para activar la pantalla de Diagnóstico/Debug en el reloj
+var DEBUG_MODE = 0;
+
 var STATE_WARMUP, STATE_STAGE_1, STATE_STAGE_2, STATE_STAGE_3, STATE_STAGE_4,
   STATE_COOLDOWN, STATE_DONE, state, timeInState, maxHR,
   WARMUP_DUR, STAGE_1_DUR, STAGE_2_DUR, STAGE_3_DUR, STAGE_4_DUR, COOLDOWN_DUR,
@@ -72,17 +78,24 @@ function onExerciseStart(input, output) {
 
 function onEvent(input, output, eventId) {
   if (eventId === 1) { // 1 = Toggle page
-    if (currentTemplate === 't') {
-      if (state === STATE_DONE) {
+    if (state === STATE_DONE) {
+      if (currentTemplate !== 'results') {
         currentTemplate = 'results';
-      } else {
+        unload('_cm');
+      }
+      return;
+    }
+    if (currentTemplate === 't') {
+      if (DEBUG_MODE === 1) {
         currentTemplate = 'debug';
+        debugTimer = 0;
+        unload('_cm');
       }
     } else {
       currentTemplate = 't';
+      debugTimer = 0;
+      unload('_cm');
     }
-    debugTimer = 0;
-    unload('_cm'); // Force watch to reload the UI template
   } else if (eventId === 2) { // 2 = Cycle stage duration (only in WARMUP)
     if (state === STATE_WARMUP) {
       stageDurIndex = (stageDurIndex + 1) % 3;
@@ -95,35 +108,35 @@ function onEvent(input, output, eventId) {
       }
       timeInState = 0; // Reset warmup time to start fresh with new duration
     }
-  } else if (eventId === 3) { // 3 = Toggle Standard vs Advanced mode
-    testModeNum = testModeNum === 1 ? 0 : 1;
-    zs_active = testModeNum;
-    unload('_cm');
   }
 }
 
-var accumulateDecoupling = function(input, stageDur) {
+var accumulateDecoupling = function (input, stageDur) {
   var offset = stageDur > 120 ? 60 : 0;
   if (timeInState < offset) return;
 
   var halfPoint = offset + (stageDur - offset) / 2;
 
   if (timeInState < halfPoint) {
-    if (input.HeartRate > 0 && input.Speed > 0) {
+    if (input.HeartRate > 0) {
       h1_hrSum += input.HeartRate;
-      h1_spdSum += input.Speed;
       h1_count++;
+      if (input.Speed && input.Speed > 0) {
+        h1_spdSum += input.Speed;
+      }
     }
   } else {
-    if (input.HeartRate > 0 && input.Speed > 0) {
+    if (input.HeartRate > 0) {
       h2_hrSum += input.HeartRate;
-      h2_spdSum += input.Speed;
       h2_count++;
+      if (input.Speed && input.Speed > 0) {
+        h2_spdSum += input.Speed;
+      }
     }
   }
 };
 
-var saveStageResult = function(stageIndex) {
+var saveStageResult = function (stageIndex) {
   var avg_hr1 = h1_count > 0 ? h1_hrSum / h1_count : 0;
   var avg_spd1 = h1_count > 0 ? h1_spdSum / h1_count : 0;
   var avg_hr2 = h2_count > 0 ? h2_hrSum / h2_count : 0;
@@ -145,7 +158,7 @@ var saveStageResult = function(stageIndex) {
   };
 };
 
-var calculateThresholds = function() {
+var calculateThresholds = function () {
   var foundLT1 = false;
   for (var i = 0; i < stage_results.length; i++) {
     var sr = stage_results[i];
@@ -233,7 +246,7 @@ function evaluate(input, output) {
       }
       break;
     case STATE_STAGE_4:
-      stageLabel = "Tapering";
+      stageLabel = "Peak Stage";
       targetLow = maxHR * 0.81;
       targetHigh = maxHR * 1.0;
       stepLabel = "4/4";
@@ -254,6 +267,7 @@ function evaluate(input, output) {
       if (timeInState >= COOLDOWN_DUR) {
         state = STATE_DONE;
         currentTemplate = 'results';
+        unload('_cm');
       }
       break;
     case STATE_DONE:
@@ -270,39 +284,19 @@ function evaluate(input, output) {
     h2_hrSum = 0; h2_spdSum = 0; h2_count = 0;
   }
 
-  // --- DFA Estimator ---
-  var hrVal = (input.HeartRate && input.HeartRate > 0) ? input.HeartRate : 0;
-  var hrPct = (hrVal > 0 && maxHR > 0) ? (hrVal / maxHR) : 0.6;
-  var dfaProxy = 1.4 - (hrPct * 0.9);
-  if (dfaProxy < 0.2) dfaProxy = 0.2;
-  if (dfaProxy > 1.5) dfaProxy = 1.5;
-  dfa_current = dfaProxy;
-
-  // --- REAL-TIME THRESHOLD DETECTION (ADVANCED MODE) ---
-  if (testModeNum === 1 && state >= 1 && state <= 4) {
-    var currentSpeed = (input.Speed && input.Speed > 0) ? input.Speed : 0;
-    if (!lt1_detected && dfa_current < 0.75) {
-      lt1_hr = hrVal;
-      lt1_pace = currentSpeed;
-      lt1_detected = true;
-    }
-    if (!lt2_detected && dfa_current < 0.50) {
-      lt2_hr = hrVal;
-      lt2_pace = currentSpeed;
-      lt2_detected = true;
-    }
-  }
-
   output.stateNum = state;
   var encodedTargets = Math.round(targetLow) * 1000 + Math.round(targetHigh);
   output.hrTargetNum = encodedTargets;
   output.timeRemaining = timeRem;
 
-  output.lt1HR = lt1_hr * 1000 + lt2_hr;
-  output.testModeNum = testModeNum;
+  output.lt1HR = Math.round(lt1_hr);
+  output.lt2HR = Math.round(lt2_hr);
+  output.testModeNum = 0; // Statically 0 (Standard only)
   output.lt1Pace = lt1_pace;
   output.lt2Pace = lt2_pace;
   output.lt2Power = lt2_power;
+  output.dfaCurrent = 0; // ZoneSense removed
+  output.zsActiveNum = 0; // ZoneSense removed
 }
 
 function getUserInterface(input, output) {

@@ -4,7 +4,7 @@
         <div style="top:0%; left:0%; width:100%; height:15%; background-color:#FFE322; position:absolute;">
             <!-- 1. Stage Name -->
             <div class="sp-t-m p-hc" style="top:calc(50% - 50%e); color:#000000; font-weight:bold; position:absolute;">
-                <eval input="/Zapp/{zapp_index}/Output/stateNum" outputFormat="script x => 'Warm Up,Stable,Stable,Stable Stage,Tapering,Cool Down,TEST DONE'.split(',')[x] || 'Warm Up'" default="---" />
+                <eval input="/Zapp/{zapp_index}/Output/stateNum" outputFormat="script x => 'Warm Up,Stable,Stable,Stable Stage,Peak Stage,Cool Down,TEST DONE'.split(',')[x] || 'Warm Up'" default="---" />
             </div>
         </div>
 
@@ -58,9 +58,6 @@
 
         <!-- Button Navigation -->
         <userInput>
-            <pushButton name="up" type="lock" longType="lock"
-                onClick="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');"
-                onLongPressStart="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');" />
             <pushButton name="down" type="lock" longType="lock"
                 onClick="$.put('/Zapp/{zapp_index}/Event', 2, null, 'int32');"
                 onLongPressStart="$.put('/Zapp/{zapp_index}/Event', 2, null, 'int32');" />

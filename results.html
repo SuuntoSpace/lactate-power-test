@@ -12,7 +12,7 @@
       </div>
 
       <!-- LT1 HR -->
-      <div class="sp-vertical-center" style="top:calc(32% - 50%e); left:calc(32% - 50%e); position:absolute;">
+      <div class="sp-vertical-center" style="top:calc(32% - 50%e); left:calc(30% - 50%e); position:absolute;">
           <span class="f-num" style="font-size:24px; color:#FFFFFF;">
               <eval input="/Zapp/{zapp_index}/Output/lt1HR" outputFormat="HeartRate_Fourdigits" default="---" />
           </span>
@@ -20,7 +20,7 @@
       </div>
 
       <!-- LT1 Pace -->
-      <div class="sp-vertical-center" style="top:calc(32% - 50%e); left:calc(72% - 50%e); position:absolute;">
+      <div class="sp-vertical-center" style="top:calc(32% - 50%e); left:calc(68% - 50%e); position:absolute;">
           <span class="f-num" style="font-size:24px; color:#FFFFFF;">
               <eval input="/Zapp/{zapp_index}/Output/lt1Pace" outputFormat="Pace_Fourdigits" default="--:--" />
           </span>
@@ -36,7 +36,7 @@
       </div>
 
       <!-- LT2 HR -->
-      <div class="sp-vertical-center" style="top:calc(60% - 50%e); left:calc(32% - 50%e); position:absolute;">
+      <div class="sp-vertical-center" style="top:calc(60% - 50%e); left:calc(30% - 50%e); position:absolute;">
           <span class="f-num" style="font-size:24px; color:#FFFFFF;">
               <eval input="/Zapp/{zapp_index}/Output/lt2HR" outputFormat="HeartRate_Fourdigits" default="---" />
           </span>
@@ -44,7 +44,7 @@
       </div>
 
       <!-- LT2 Pace -->
-      <div class="sp-vertical-center" style="top:calc(60% - 50%e); left:calc(72% - 50%e); position:absolute;">
+      <div class="sp-vertical-center" style="top:calc(60% - 50%e); left:calc(68% - 50%e); position:absolute;">
           <span class="f-num" style="font-size:24px; color:#FFFFFF;">
               <eval input="/Zapp/{zapp_index}/Output/lt2Pace" outputFormat="Pace_Fourdigits" default="--:--" />
           </span>
@@ -52,10 +52,10 @@
       </div>
 
       <!-- LT2 Power (Symmetrical: label left, W value right) -->
-      <div class="f-s sp-vertical-center" style="top:calc(74% - 50%e); left:calc(32% - 50%e); position:absolute; color:#AAAAAA;">
+      <div class="f-s sp-vertical-center" style="top:calc(74% - 50%e); left:calc(30% - 50%e); position:absolute; color:#AAAAAA;">
           Potencia
       </div>
-      <div class="sp-vertical-center" style="top:calc(74% - 50%e); left:calc(72% - 50%e); position:absolute;">
+      <div class="sp-vertical-center" style="top:calc(74% - 50%e); left:calc(68% - 50%e); position:absolute;">
           <span class="f-num" style="font-size:26px; color:#FFFFFF;">
               <eval input="/Zapp/{zapp_index}/Output/lt2Power" outputFormat="Power_Fourdigits" default="---" />
           </span>
@@ -69,12 +69,6 @@
 
       <!-- Button Navigation -->
       <userInput>
-          <pushButton name="next" type="lock" longType="lock"
-              onClick="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');"
-              onLongPressStart="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');" />
-          <pushButton name="up" type="lock" longType="lock"
-              onClick="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');"
-              onLongPressStart="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');" />
-      </userInput>
+          </userInput>
   </div>
 </uiView>
