@@ -216,16 +216,16 @@ function evaluate(input, output) {
   switch (state) {
     case STATE_WARMUP:
       stageLabel = "Warm Up";
-      targetLow = maxHR * 0.57;
-      targetHigh = maxHR * 0.64;
+      targetLow = maxHR * 0.62;
+      targetHigh = maxHR * 0.69;
       stepLabel = "PRE";
       timeRem = WARMUP_DUR - timeInState;
       if (timeInState >= WARMUP_DUR) shouldAdvance = true;
       break;
     case STATE_STAGE_1:
       stageLabel = "Stable";
-      targetLow = maxHR * 0.605;
-      targetHigh = maxHR * 0.71;
+      targetLow = maxHR * 0.65;
+      targetHigh = maxHR * 0.76;
       stepLabel = "1/4";
       timeRem = STAGE_1_DUR - timeInState;
       accumulateDecoupling(input, STAGE_1_DUR);
@@ -236,8 +236,8 @@ function evaluate(input, output) {
       break;
     case STATE_STAGE_2:
       stageLabel = "Stable";
-      targetLow = maxHR * 0.673;
-      targetHigh = maxHR * 0.778;
+      targetLow = maxHR * 0.72;
+      targetHigh = maxHR * 0.84;
       stepLabel = "2/4";
       timeRem = STAGE_2_DUR - timeInState;
       accumulateDecoupling(input, STAGE_2_DUR);
@@ -248,8 +248,8 @@ function evaluate(input, output) {
       break;
     case STATE_STAGE_3:
       stageLabel = "Stable Stage";
-      targetLow = maxHR * 0.742;
-      targetHigh = maxHR * 0.847;
+      targetLow = maxHR * 0.80;
+      targetHigh = maxHR * 0.91;
       stepLabel = "3/4";
       timeRem = STAGE_3_DUR - timeInState;
       accumulateDecoupling(input, STAGE_3_DUR);
@@ -265,7 +265,7 @@ function evaluate(input, output) {
       break;
     case STATE_STAGE_4:
       stageLabel = "Peak Stage";
-      targetLow = maxHR * 0.81;
+      targetLow = maxHR * 0.87;
       targetHigh = maxHR * 1.0;
       stepLabel = "4/4";
       timeRem = STAGE_4_DUR - timeInState;
