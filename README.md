@@ -89,9 +89,10 @@ Para mayor claridad sobre el comportamiento interno de la aplicación, a continu
 ## 🎮 Controles e Interfaz en el Reloj
 
 ### Pantalla Principal de Entrenamiento
-* **Parte Superior:** Muestra la fase actual en la que te encuentras (*Warm Up, Stable, Peak Stage, etc.*).
+* **Parte Superior:** Muestra la fase actual en la que te encuentras (*Warm Up, Stable, Peak Stage, etc.*) con un posicionamiento optimizado para pantallas curvas.
 * **Rango Central:** Frecuencia cardíaca recomendada (objetivo) para esa etapa.
-* **Centro de pantalla:** Muestra tu Ritmo actual (izquierda, acompañado por un **icono de velocímetro verde**) y tus Pulsaciones en tiempo real (derecha, acompañado por un **icono de corazón rojo**).
+* **Centro de pantalla:** Muestra tu Ritmo actual (izquierda, acompañado por un **icono de velocímetro verde**) y tus Pulsaciones en tiempo real (derecha, acompañado por un **icono de corazón cuyo color se sincroniza en tiempo real con tu zona de intensidad de cardio actual**).
+* **Corona Circular de Intensidad:** Un arco de colores nativo en el contorno exterior de la pantalla que resalta en grosor y color la zona activa del usuario (Z1 cian, Z2 verde, Z3 amarillo, Z4 naranja, Z5 rojo, y gris para zonas inactivas). El diseño de esta corona ha sido optimizado para prescindir de la aguja física (puntero triangular) para garantizar una visualización limpia y sin solapamientos con la interfaz del test en cualquier tamaño de pantalla.
 * **Parte Inferior:** Cuenta atrás con el tiempo restante para finalizar la fase actual y el indicador de etapa (*PRE, 1/4, 2/4, 3/4, 4/4, POST*).
 
 ### Pantalla de Resultados Finales

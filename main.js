@@ -322,7 +322,9 @@ function evaluate(input, output) {
 
 function getUserInterface(input, output) {
   return {
-    template: currentTemplate || 't'
+    template: currentTemplate || 't',
+    zn: { input: '/Activity/Zones/HeartRate/CurrentZone' },
+    segm: 5
   };
 }
 

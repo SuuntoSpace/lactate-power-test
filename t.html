@@ -1,9 +1,26 @@
-<uiView onFlickUp="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');">
+<uiView 
+  onFlickUp="$.put('/Zapp/{zapp_index}/Event', 1, null, 'int32');"
+  onLoad="
+    var currentZoneSub;
+  "
+  onActivate="
+    currentZoneSub = $.subscribe('/Activity/Zones/HeartRate/CurrentZone', function(v) {
+      var colors = ['#FF2A55', '#36E4FF', '#6EE76D', '#FFDD33', '#FF9F33', '#FF5640'];
+      var color = colors[v] || '#FF2A55';
+      setStyle('#hr-heart-ico', 'color', color);
+    });
+  "
+  onDeactivate="
+    $.unsubscribe(currentZoneSub);
+  "
+>
     <div style="background-color:#111111; width:100%; height:100%; position:absolute; top:0; left:0;">
+        <!-- Corona de Cardio (Lienzo Directo sin la Aguja) -->
+        <object type="canvas" class="zone-gauge-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%;" build="ctx => buildGenericGauge(ctx, zn, 0, 4, 1, segm);" />
         <!-- Topmost: background -->
         <div style="top:0%; left:0%; width:100%; height:15%; background-color:#FFE322; position:absolute;">
             <!-- 1. Stage Name -->
-            <div class="sp-t-m p-hc" style="top:calc(50% - 50%e); color:#000000; font-weight:bold; position:absolute;">
+            <div class="sp-t-m p-hc" style="top:calc(60% - 50%e); color:#000000; font-weight:bold; position:absolute;">
                 <eval input="/Zapp/{zapp_index}/Output/stateNum" outputFormat="script x => 'Warm Up,Stable,Stable,Stable Stage,Peak Stage,Cool Down,TEST DONE'.split(',')[x] || 'Warm Up'" default="---" />
             </div>
         </div>
@@ -19,7 +36,7 @@
         </div>
 
         <!-- 4. Recommended HR Label -->
-        <div class="f-s cm-mid p-hc" style="top:calc(36% - 50%e); position:absolute;">Recommended heart rate</div>
+        <div class="f-s cm-mid p-hc" style="top:calc(37% - 50%e); position:absolute;">Recommended heart rate</div>
 
         <!-- 5. Pace (Left side) -->
         <!-- Value -->
@@ -35,7 +52,7 @@
         <!-- 6. Current HR (Right side) -->
         <!-- Value -->
         <div class="sp-vertical-center" style="top:calc(50% - 50%e); left:calc(70% - 50%e); position:absolute;">
-            <span class="f-ico" style="color:#FF2A55;">&#xF101;</span>
+            <span id="hr-heart-ico" class="f-ico" style="color:#FF2A55;">&#xF101;</span>
             <span class="f-num" style="font-size:28px; margin-left:4px;">
                 <eval input="/Activity/Move/-1/Heartrate/Current" outputFormat="HeartRate_Fourdigits" default="--" />
             </span>
