@@ -283,6 +283,7 @@ function evaluate(input, output) {
       stepLabel = "POST";
       timeRem = COOLDOWN_DUR - timeInState;
       if (timeInState >= COOLDOWN_DUR) {
+        playIndication("Confirm");
         state = STATE_DONE;
         currentTemplate = 'results';
         unload('_cm');
@@ -295,7 +296,12 @@ function evaluate(input, output) {
       break;
   }
 
+  if (state !== STATE_DONE && timeRem >= 1 && timeRem <= 5) {
+    playIndication("StartTimer");
+  }
+
   if (shouldAdvance) {
+    playIndication("Interval");
     state++;
     timeInState = 0;
     h1_hrSum = 0; h1_spdSum = 0; h1_count = 0; h1_spdCount = 0;
