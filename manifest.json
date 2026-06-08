@@ -68,6 +68,11 @@
       "name": "dfaCurrent",
       "log": false,
       "shownName": "Current DFA a1"
+    },
+    {
+      "name": "hrZoneNum",
+      "log": false,
+      "shownName": "HR Zone Index"
     }
   ],
   "template": [

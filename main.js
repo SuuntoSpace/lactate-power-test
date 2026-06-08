@@ -324,6 +324,28 @@ function evaluate(input, output) {
     output.lt2Pace = lt2_pace;
     output.lt2Power = lt2_power;
   }
+
+  var hr = Math.round((input.HeartRate || 0) * 60);
+  var zone = 0;
+  if (maxHR > 0 && hr > 0) {
+    var limit5 = Math.round(maxHR * 0.87);
+    var limit4 = Math.round(maxHR * 0.82);
+    var limit3 = Math.round(maxHR * 0.77);
+    var limit2 = Math.round(maxHR * 0.72);
+
+    if (hr >= limit5) {
+      zone = 5;
+    } else if (hr >= limit4) {
+      zone = 4;
+    } else if (hr >= limit3) {
+      zone = 3;
+    } else if (hr >= limit2) {
+      zone = 2;
+    } else {
+      zone = 1;
+    }
+  }
+  output.hrZoneNum = zone;
 }
 
 function getUserInterface(input, output) {
@@ -333,7 +355,8 @@ function getUserInterface(input, output) {
     segm: 5,
     currentHR: { input: '/Activity/Move/-1/Heartrate/Current' },
     hrTarget: { input: '/Zapp/{zapp_index}/Output/hrTargetNum' },
-    stateNum: { input: '/Zapp/{zapp_index}/Output/stateNum' }
+    stateNum: { input: '/Zapp/{zapp_index}/Output/stateNum' },
+    hrZone: { input: '/Zapp/{zapp_index}/Output/hrZoneNum' }
   };
 }
 

@@ -4,6 +4,7 @@
     var g = typeof globalThis !== 'undefined' ? globalThis : (typeof window !== 'undefined' ? window : Function('return this')());
     g.g = g;
     g.currentHR = 0;
+    g.currentZone = 0;
     g.hrTarget = 0;
     g.stateNum = 0;
     g.targetLow = 0;
@@ -102,19 +103,14 @@
     };
 
     g.updateHRColors = function() {
-      if (g.stateNum === 6 || g.targetLow <= 0 || g.currentHR <= 0) {
+      setStyle('#hr-val-text', 'color', '#FFFFFF');
+      if (g.stateNum === 6 || g.currentHR <= 0) {
         setStyle('#hr-heart-ico', 'color', '#FF2A55');
-        setStyle('#hr-val-text', 'color', '#FFFFFF');
         return;
       }
-      var color = '#6EE76D'; // Green
-      if (g.currentHR < g.targetLow) {
-        color = '#00A2FF'; // Blue
-      } else if (g.currentHR > g.targetHigh) {
-        color = '#FF2A55'; // Red
-      }
+      var colors = ['#FFFFFF', '#36E4FF', '#6EE76D', '#FFE322', '#FF9F33', '#FF2A55'];
+      var color = colors[g.currentZone] || '#FFFFFF';
       setStyle('#hr-heart-ico', 'color', color);
-      setStyle('#hr-val-text', 'color', color);
     };
   "
   onActivate=""
@@ -178,6 +174,10 @@
             <eval input="/Zapp/{zapp_index}/Output/stateNum" outputFormat="script x => 'PRE,1/4,2/4,3/4,4/4,POST,DONE'.split(',')[x] || 'PRE'" default="---" onValueChanged="var steps = ['PRE','1/4','2/4','3/4','4/4','POST','DONE']; var idx = steps.indexOf(targetData); g.stateNum = idx !== -1 ? idx : 0; g.updateHRColors(); control('#hrGauge', 'REFRESH');" />
         </div>
 
+        <!-- Heart Rate Zone Subscription (invisible) -->
+        <div style="top:0; left:0; width:0px; height:0px; position:absolute;">
+            <eval input="/Zapp/{zapp_index}/Output/hrZoneNum" outputFormat="script x => x" default="0" onValueChanged="g.currentZone = Number(targetData) || 0; g.updateHRColors();" />
+        </div>
         <!-- Button Navigation -->
         </div>
 </uiView>

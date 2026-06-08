@@ -55,7 +55,7 @@ To provide clarity on the application's internal behavior, here are the details 
 
 ### ⚡ Dynamic Parameters (Variables)
 * **Maximum Heart Rate (MaxHR):**
-  * Obtained in real-time from the value configured in the watch's user profile (`input.MaxHR`). If not detected or if it is an invalid value (less than or equal to zero), a fallback value of **190 bpm** is applied. It supports beats per minute (BPM) and beats per second (BPS) formats.
+  * Obtained in real-time from the value configured in the watch's user profile (`input.MaxHR`). If not detected or if it is an invalid value (less than or equal to zero), a fallback value of **194 bpm** is applied. It supports beats per minute (BPM) and beats per second (BPS) formats.
 * **Real-time Sensors (Pace, Heart Rate, and Power):**
   * Live values for speed/pace (GPS/Footpod), heart rate (optical sensor or chest strap), and running power are updated dynamically every second on the watch screen.
 * **Exercise Pause Control:**
