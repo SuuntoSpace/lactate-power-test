@@ -96,11 +96,5 @@
     {
       "name": "countdown.html"
     }
-  ],
-  "image": [
-    {
-      "name": "go_image.png",
-      "type": "a64"
-    }
   ]
 }

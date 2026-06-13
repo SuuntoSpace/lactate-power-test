@@ -33,29 +33,29 @@
     g.drawEcgPath = function(ctx, x1, x2, w, yPulse) {
       var xStart = Math.floor(160 * w / 576);
       var xEnd = Math.floor(380 * w / 576);
-      
+
       ctx.moveTo(x1, yPulse + g.getEcgY(x1, w));
-      
+
       if (x1 >= xEnd || xStart >= x2) {
         ctx.lineTo(x2, yPulse + g.getEcgY(x2, w));
         return;
       }
-      
+
       if (xStart > x1) {
         ctx.lineTo(xStart, yPulse);
       }
-      
+
       var startLoop = x1 > xStart ? x1 : xStart;
       var endLoop = xEnd > x2 ? x2 : xEnd;
-      
+
       startLoop = Math.floor(startLoop / 8) * 8 + 8;
-      
+
       for (var x = startLoop; endLoop > x; x += 8) {
         ctx.lineTo(x, yPulse + g.getEcgY(x, w));
       }
-      
+
       ctx.lineTo(endLoop, yPulse + g.getEcgY(endLoop, w));
-      
+
       if (x2 > xEnd) {
         ctx.lineTo(x2, yPulse);
       }
@@ -66,15 +66,15 @@
       if (!w || 100 > w) {
         return;
       }
-      
+
       var cx = w / 2;
       var cy = w / 2;
-      
+
       // Fondo negro base
       ctx.fillStyle = '#111111';
       ctx.fillRect(0, 0, w, w);
 
-      // Curved yellow header banner (matching t.html exactly)
+      // Curved yellow header banner
       var r = w / 2 - 14;
       var dy = 0.15 * w - cy;
       if (r >= Math.abs(dy)) {
@@ -104,11 +104,10 @@
       var yPulse = cy + 80; // EFG un pelin mas abajo
       ctx.lineCap = 'round';
 
-      var cycleTicks = 15; // 1.5 seconds sweep cycle (matching latido.mp4 exactly!)
+      var cycleTicks = 15; 
       var currentTick = g.animTick % cycleTicks;
       var sweepX = (currentTick / cycleTicks) * w;
-      var gap = 16;
-
+      
       // Draw left segment (active neon sweep)
       ctx.lineWidth = 5;
       ctx.strokeStyle = '#36E4FF';
@@ -134,12 +133,12 @@
 
     g.onCountdownChange = function(targetData) {
       g.countVal = Number(targetData) || 0;
-      if (g.countVal === 0) {
-          setStyle('#text-num', 'visibility', 'HIDDEN');
-          setStyle('#text-go', 'visibility', 'VISIBLE');
+      
+      // Si el valor es menor que 0, escondemos el texto. Si es de 5 a 0, se mantiene visible.
+      if (g.countVal < 0) {
+          setStyle('#text-num', 'visibility', 'hidden');
       } else {
-          setStyle('#text-num', 'visibility', 'VISIBLE');
-          setStyle('#text-go', 'visibility', 'HIDDEN');
+          setStyle('#text-num', 'visibility', 'visible');
       }
       control('#countBgCanvas', 'REFRESH');
     };
@@ -153,7 +152,7 @@
         control('#countBgCanvas', 'REFRESH');
       });
 
-      // Driver de animación para el emulador (cuando /Dev/Time/Tick10hz no se dispara)
+      // Driver de animación para el emulador 
       if (typeof navigator !== 'undefined' && navigator.userAgent) {
         g.emuInterval = setInterval(function() {
           g.animTick++;
@@ -178,20 +177,15 @@
 " onActivate="g.activate();" onDeactivate="g.deactivate();">
     <div style="background-color:#111111; width:100%; height:100%; position:absolute; top:0; left:0;">
         <object type="canvas" id="countBgCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%;" build="ctx => g.drawCountdownBg(ctx);" />
-        
-        <!-- Curved Banner Title Wrapper matching t.html exactly -->
+
         <div style="top:4%; left:12%; width:76%; height:11%; position:absolute;">
             <div class="sp-t-m p-hc" style="top:calc(58% - 50%e); color:#000000; font-weight:bold; position:absolute;">
                 START
             </div>
         </div>
-        
-        <div id="text-go" class="p-hc" style="top:18%; width:60px; height:60px; visibility:hidden;">
-            <img class="c-yellow" src="go_image.png" style="position:absolute; top:0; left:0; width:100%; height:100%;" />
-            <div style="position:absolute; width:0px; height:0px;"></div>
-        </div>
+
         <div id="text-num" class="p-hc" style="top:18%; color:#FFE322; font-size:60px; font-weight:bold;">
-            <eval input="/Zapp/{zapp_index}/Output/countdown" outputFormat="script x => (x > 0 ? x.toString() : ' ')" default="5" onValueChanged="g.onCountdownChange(targetData);" />
+            <eval input="/Zapp/{zapp_index}/Output/countdown" outputFormat="script x => (x >= 0 ? x.toString() : ' ')" default="5" onValueChanged="g.onCountdownChange(targetData);" />
         </div>
 
         <userInput>
