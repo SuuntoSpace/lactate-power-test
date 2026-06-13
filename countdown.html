@@ -152,12 +152,27 @@
         }
         control('#countBgCanvas', 'REFRESH');
       });
+
+      // Driver de animación para el emulador (cuando /Dev/Time/Tick10hz no se dispara)
+      if (typeof navigator !== 'undefined' && navigator.userAgent) {
+        g.emuInterval = setInterval(function() {
+          g.animTick++;
+          if (g.animTick >= 20000) {
+            g.animTick = 0;
+          }
+          control('#countBgCanvas', 'REFRESH');
+        }, 100);
+      }
     };
 
     g.deactivate = function() {
       if (g.tickSub) {
         $.unsubscribe(g.tickSub);
         g.tickSub = null;
+      }
+      if (g.emuInterval) {
+        clearInterval(g.emuInterval);
+        g.emuInterval = null;
       }
     };
 " onActivate="g.activate();" onDeactivate="g.deactivate();">
@@ -171,7 +186,7 @@
             </div>
         </div>
         
-        <div id="text-go" class="p-hc" style="top:18%; color:#FFE322; font-size:60px; font-weight:bold; visibility:hidden;">GO</div>
+        <img id="text-go" class="p-hc c-yellow" src="go_image.png" style="top:18%; width:60px; height:60px; visibility:hidden;" />
         <div id="text-num" class="p-hc" style="top:18%; color:#FFE322; font-size:60px; font-weight:bold;">
             <eval input="/Zapp/{zapp_index}/Output/countdown" outputFormat="script x => (x > 0 ? x.toString() : ' ')" default="5" onValueChanged="g.onCountdownChange(targetData);" />
         </div>
