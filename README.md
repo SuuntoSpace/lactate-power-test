@@ -55,7 +55,7 @@ To provide clarity on the application's internal behavior, here are the details 
 
 ### ⚡ Dynamic Parameters (Variables)
 * **Maximum Heart Rate (MaxHR):**
-  * Obtained in real-time from the value configured in the watch's user profile (`input.MaxHR`). If not detected or if it is an invalid value (less than or equal to zero), a fallback value of **194 bpm** is applied. It supports beats per minute (BPM) and beats per second (BPS) formats.
+  * Obtained in real-time from the value configured in the watch's user profile (`input.MaxHR`). If not detected or if it is an invalid value (less than or equal to zero), a fallback value of **190 bpm** is applied. It supports beats per minute (BPM) and beats per second (BPS) formats.
 * **Real-time Sensors (Pace, Heart Rate, and Power):**
   * Live values for speed/pace (GPS/Footpod), heart rate (optical sensor or chest strap), and running power are updated dynamically every second on the watch screen.
 * **Exercise Pause Control:**
@@ -88,10 +88,13 @@ To provide clarity on the application's internal behavior, here are the details 
 
 ## 🎮 Watch Controls & Interface
 
+### Intro Countdown Screen
+* **Animated ECG Intro:** Before the test begins, an animated 5-second countdown is displayed, featuring a highly realistic trailing ECG wave tracing across the screen to prepare you for the test.
+
 ### Main Workout Screen
 * **Top Area:** Displays the active stage name (*Warm Up, Stable, Peak Stage, etc.*) inside the curved yellow banner, aligned to prevent side clipping.
 * **Central Range:** Recommended heart rate target range for the active stage.
-* **Center Screen:** Displays current Pace (left, accompanied by a **green speedometer icon**) and real-time Heart Rate (right, accompanied on its right by a **heart icon**). Both the heart rate value and heart icon synchronize their color in real-time based on the active target zone (Blue if below target, Green if inside range, Red if above target).
+* **Center Screen:** Displays current Pace (left, accompanied by a **green speedometer icon**) and real-time Heart Rate (right, accompanied on its right by a **heart icon**). Both the heart rate value and heart icon synchronize their color in real-time based on your current absolute Suunto heart rate zone (1 to 5).
 * **3-Zone Cardio Ring with Dynamic Needle:** A circular ring divided into 3 segments on the outer border (Blue for below target, Green for inside target, Red for above target). The active segment is highlighted with an `8px` thickness and vibrant color, while inactive segments are reduced to `4px` thickness and darker shades. Directly above the corona, a **white triangular needle with a black border** points inwards and moves dynamically based on live heart rate to display your exact position in the target zone.
 * **Bottom Area:** Countdown timer with remaining time for the current stage, and the stage indicator (*PRE, 1/4, 2/4, 3/4, 4/4, POST*).
 
@@ -108,11 +111,10 @@ To keep you within the recommended physiological zone during the test, the app m
 * **Trigger Mechanism**: If your heart rate stays outside the recommended range (`hr < targetLow` or `hr > targetHigh`) for **20 consecutive seconds**, the app triggers a physical and visual alert.
 * **Physical Alert**: Emits a double beep and vibration on the watch using the native `Interval` indication.
 * **Visual Alert Screen (`alert.html`)**: Automatically overrides the workout view for **5 seconds** (or until manually dismissed by button press or swiping) to display:
-  * **Dynamic Banner Color**: Red for `TOO HIGH!`, Blue for `TOO LOW!`, or Yellow for warning.
-  * **Alert Info Pill**: Displays `20s ALERT` to indicate the duration of deviation.
-  * **Row 1**: Live Heart Rate (e.g. `155 bpm`) with a heart icon.
+  * **Warning Banner**: A solid yellow warning banner indicates the alert, displaying whether your heart rate is `TOO LOW!` or `TOO HIGH!`.
+  * **Row 1**: Live Heart Rate (e.g. `155 bpm`) with a red heart icon.
   * **Row 2**: Recommended Heart Rate Target Range (e.g. `124-142 bpm`).
-  * **Row 3**: Current Pace (e.g. `5'12 /km`) with a pace icon.
+  * **Row 3**: Current Pace (e.g. `5'12 /km`) with a green pace icon.
 * **Reset Rules**: Returning to target heart rate range or transitioning to a new stage immediately resets the 20-second counter to `0`.
 
 ---
