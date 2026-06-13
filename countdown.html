@@ -135,11 +135,11 @@
     g.onCountdownChange = function(targetData) {
       g.countVal = Number(targetData) || 0;
       if (g.countVal === 0) {
-          setStyle('#text-num', 'visibility', 'hidden');
-          setStyle('#text-go', 'visibility', 'visible');
+          setStyle('#text-num', 'visibility', 'HIDDEN');
+          setStyle('#text-go', 'visibility', 'VISIBLE');
       } else {
-          setStyle('#text-num', 'visibility', 'visible');
-          setStyle('#text-go', 'visibility', 'hidden');
+          setStyle('#text-num', 'visibility', 'VISIBLE');
+          setStyle('#text-go', 'visibility', 'HIDDEN');
       }
       control('#countBgCanvas', 'REFRESH');
     };
