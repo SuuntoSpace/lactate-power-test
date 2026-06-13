@@ -4,19 +4,19 @@
 var DEBUG_MODE = 0, STATE_WARMUP = 0, STATE_STAGE_1 = 1, STATE_STAGE_2 = 2,
   STATE_STAGE_3 = 3, STATE_STAGE_4 = 4, STATE_COOLDOWN = 5, STATE_DONE = 6;
 
-var state = STATE_WARMUP, timeInState = 0, maxHR = 190, currentTemplate = 'countdown', stageDurIndex = 0, isPaused = 0;
-var lt1_hr = 0, lt1_pace = 0, lt2_hr = 0, lt2_pace = 0, lt2_power = 0;
-var h1_hrSum = 0, h1_spdSum = 0, h1_count = 0, h1_spdCount = 0;
-var h2_hrSum = 0, h2_spdSum = 0, h2_count = 0, h2_spdCount = 0;
-var h3_pwrSum = 0, h3_pwrCount = 0, stage_results = [];
-var zs_active = 0, dfa_current = 0, debugTimer = 0, outOfRangeSeconds = 0, alertShowTimer = 0;
-var WARMUP_DUR = 600, STAGE_1_DUR = 600, STAGE_2_DUR = 600, STAGE_3_DUR = 600, STAGE_4_DUR = 300, COOLDOWN_DUR = 300;
+var state, timeInState, maxHR, currentTemplate, stageDurIndex, isPaused;
+var lt1_hr, lt1_pace, lt2_hr, lt2_pace, lt2_power;
+var h1_hrSum, h1_spdSum, h1_count, h1_spdCount;
+var h2_hrSum, h2_spdSum, h2_count, h2_spdCount;
+var h3_pwrSum, h3_pwrCount, stage_results;
+var zs_active, dfa_current, debugTimer, outOfRangeSeconds, alertShowTimer;
 var countdownValue = 6, isCountdownActive = 0;
+var WARMUP_DUR = 600, STAGE_1_DUR = 600, STAGE_2_DUR = 600, STAGE_3_DUR = 600, STAGE_4_DUR = 300, COOLDOWN_DUR = 300;
 
 var resetApp = function () {
   state = STATE_WARMUP; timeInState = 0; maxHR = 190; currentTemplate = 'countdown'; stageDurIndex = 0;
-  countdownValue = 6; // Empieza en 6 para que la primera resta deje el número en 5
-  isCountdownActive = 0; // Inicia pausado (esperando botón superior)
+  countdownValue = 6;
+  isCountdownActive = 0;
   lt1_hr = 0; lt1_pace = 0; lt2_hr = 0; lt2_pace = 0; lt2_power = 0;
   h1_hrSum = 0; h1_spdSum = 0; h1_count = 0; h1_spdCount = 0;
   h2_hrSum = 0; h2_spdSum = 0; h2_count = 0; h2_spdCount = 0;
@@ -30,20 +30,85 @@ function onExerciseStart(input, output) { resetApp(); }
 function onExercisePause(input, output) { isPaused = 1; }
 function onExerciseContinue(input, output) { isPaused = 0; }
 
+var tickCountdown = function () {
+  if (isCountdownActive === 0) return;
+
+  switch (countdownValue) {
+    case 6:
+      countdownValue = 5;
+      break;
+    case 5:
+      countdownValue = 4;
+      break;
+    case 4:
+      countdownValue = 3;
+      break;
+    case 3:
+      countdownValue = 2;
+      break;
+    case 2:
+      countdownValue = 1;
+      break;
+    case 1:
+      countdownValue = 0;
+      playIndication("Confirm");
+      break;
+    case 0:
+      countdownValue = -1;
+      break;
+    case -1:
+      countdownValue = -2;
+      currentTemplate = 't';
+      unload('_cm');
+      break;
+  }
+};
+
+var evaluateCountdown = function (input, output) {
+  output.stateNum = state;
+  output.hrTargetNum = 0;
+  output.timeRemaining = 0;
+  output.testModeNum = 0;
+  output.dfaCurrent = 0;
+  output.hrZoneNum = 0;
+  output.lt1HR = 0;
+  output.lt2HR = 0;
+  output.lt1Pace = 0;
+  output.lt2Pace = 0;
+  output.lt2Power = 0;
+
+  tickCountdown();
+
+  if (countdownValue === 6) {
+    output.countdown = 5;
+  } else if (countdownValue >= 0) {
+    output.countdown = countdownValue;
+  } else if (countdownValue === -1) {
+    output.countdown = 0;
+  } else {
+    output.countdown = -2;
+  }
+};
+
+var handleCountdownEvent = function () {
+  if (isCountdownActive === 0) {
+    isCountdownActive = 1;
+    unload('_cm');
+  } else {
+    currentTemplate = 't';
+    countdownValue = -2;
+    unload('_cm');
+  }
+};
+
 function onEvent(input, output, eventId) {
   if (eventId === 1) {
     if (state === STATE_DONE) {
       if (currentTemplate !== 'results') { currentTemplate = 'results'; unload('_cm'); }
       return;
     }
-
-    // LÓGICA DE BOTÓN EN LA CUENTA ATRÁS (Botón superior)
     if (currentTemplate === 'countdown') {
-      if (isCountdownActive === 0) {
-        isCountdownActive = 1; // Primera pulsación: activa la resta
-      } else {
-        currentTemplate = 't'; countdownValue = -2; unload('_cm'); // Segunda pulsación: salta manual
-      }
+      handleCountdownEvent();
     } else if (currentTemplate === 't') {
       if (DEBUG_MODE === 1) { currentTemplate = 'debug'; debugTimer = 0; unload('_cm'); }
     } else {
@@ -91,69 +156,21 @@ var calculateThresholds = function () {
 function evaluate(input, output) {
   if (state === undefined) return;
 
-  // Lógica de cuenta atrás (debe correr aunque la actividad esté en pausa/autopausa)
   if (currentTemplate === 'countdown') {
-    // Inicialización de seguridad para el modo de cuenta atrás
-    output.stateNum = state !== undefined ? state : 0;
-    output.hrTargetNum = 0;
-    output.timeRemaining = 0;
-    output.testModeNum = 0;
-    output.dfaCurrent = 0;
-    output.hrZoneNum = 0;
-    output.countdown = countdownValue !== undefined ? countdownValue : 5;
-    output.lt1HR = 0;
-    output.lt2HR = 0;
-    output.lt1Pace = 0;
-    output.lt2Pace = 0;
-    output.lt2Power = 0;
-
-    if (isCountdownActive === 0) {
-      output.countdown = 5;
-      return;
-    }
-
-    if (countdownValue > 0) {
-      countdownValue--;
-      if (countdownValue === 0) playIndication("Confirm");
-      output.countdown = countdownValue;
-      return;
-    } else if (countdownValue === 0) {
-      // Estado de espera (mostrar GO!)
-      output.countdown = 0;
-      countdownValue = -1;
-      return;
-    } else if (countdownValue === -1) {
-      // Cuenta atrás finalizada: pasar a 't' directamente
-      countdownValue = -2;
-      currentTemplate = 't';
-      unload('_cm');
-      output.countdown = -2;
-      return;
-    } else if (countdownValue === -2) {
-      output.countdown = -2;
-      return;
-    }
+    evaluateCountdown(input, output);
+    return;
   }
 
-  // Si el ejercicio está pausado, no acumulamos tiempos de fases ni evaluamos zonas
   if (isPaused === 1) return;
 
   if (currentTemplate === 'debug') {
     debugTimer++;
-    if (debugTimer >= 30) {
-      debugTimer = 0;
-      currentTemplate = 't';
-      unload('_cm');
-    }
+    if (debugTimer >= 30) { debugTimer = 0; currentTemplate = 't'; }
   } else debugTimer = 0;
 
   if (currentTemplate === 'alert') {
     alertShowTimer--;
-    if (alertShowTimer <= 0) {
-      alertShowTimer = 0;
-      currentTemplate = 't';
-      unload('_cm');
-    }
+    if (alertShowTimer <= 0) { alertShowTimer = 0; currentTemplate = 't'; unload('_cm'); }
   } else alertShowTimer = 0;
 
   var advance = 0, tLow = 0, tHigh = 0, tRem = 0;
@@ -186,12 +203,7 @@ function evaluate(input, output) {
       if (timeInState >= STAGE_4_DUR) { saveStageResult(4); calculateThresholds(); advance = 1; } break;
     case STATE_COOLDOWN:
       tLow = maxHR * 0.50; tHigh = maxHR * 0.64; tRem = COOLDOWN_DUR - timeInState;
-      if (timeInState >= COOLDOWN_DUR) {
-        playIndication("Confirm");
-        state = STATE_DONE;
-        currentTemplate = 'results';
-        unload('_cm');
-      } break;
+      if (timeInState >= COOLDOWN_DUR) { playIndication("Confirm"); state = STATE_DONE; currentTemplate = 'results'; unload('_cm'); } break;
   }
 
   if (state !== STATE_DONE && tRem >= 1 && tRem <= 5) playIndication("StartTimer");
