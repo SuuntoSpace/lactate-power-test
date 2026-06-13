@@ -4,60 +4,47 @@
     g.countVal = 5;
     g.animTick = 0;
 
-    g.getEcgY = function(x, w) {
-      var x_orig = x * (576 / w);
-      if (160 > x_orig || x_orig > 380) {
-        return 0;
-      }
-      var val = 0;
-      if (245 > x_orig) {
-        val = 61 * Math.sin((x_orig - 160) / 85 * Math.PI);
-      } else if (286 > x_orig) {
-        val = -80 * Math.sin((x_orig - 245) / 41 * Math.PI);
-      } else if (328 > x_orig) {
-        if (312 > x_orig) {
-          var t = (x_orig - 286) / 26;
-          val = 139 * t * t;
-        } else {
-          val = 139 * (328 - x_orig) / 16;
+    // The exact 491-point relative Y coordinates from the video
+    g.ecgY = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,2,2,2,3,3,4,4,5,5,6,6,7,7,7,7,7,7,7,7,6,7,7,7,9,9,10,10,10,11,12,12,15,17,21,22,27,28,32,33,37,38,40,41,44,45,46,47,50,51,55,55,59,59,61,61,63,63,63,63,63,63,62,62,61,61,59,59,57,56,63,62,62,62,57,57,52,52,46,45,39,37,29,27,0,-1,-15,-15,-22,-22,-29,-29,-36,-36,-42,-42,-46,-46,-46,-46,-43,-43,-48,-48,-53,-53,-54,-52,-30,-26,-7,-4,6,7,15,16,20,21,21,25,26,36,65,79,87,86,90,91,94,95,107,108,113,113,121,121,125,125,127,128,129,129,133,133,136,135,131,130,119,118,101,99,86,85,74,72,55,54,35,33,21,21,16,16,15,15,15,15,15,16,18,19,21,21,23,23,25,25,26,26,26,26,27,27,26,26,25,25,24,23,21,20,19,19,17,17,15,15,13,12,10,10,6,6,4,4,3,2,2,2,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,-1,0,0,0,0,0,0,0,0,0,0,0,-1,0,0,0,0,0,0,0,0,-1,0,0,0,0,0,-1,-1,-1,-1,-1,-1,-1];
+
+    g.ecgYCache = null;
+    g.ecgColorCache = null;
+    g.ecgColorDimCache = null;
+    g.ecgCacheWidth = 0;
+
+    g.initEcgCache = function(w) {
+      g.ecgYCache = [];
+      g.ecgColorCache = [];
+      g.ecgColorDimCache = [];
+      g.ecgCacheWidth = w;
+      for (var x = 0; w >= x; x += 4) {
+        var idx_orig = Math.floor(x * (491 / w));
+        if (idx_orig < 0) idx_orig = 0;
+        if (idx_orig >= 491) idx_orig = 490;
+        
+        var y_rel = g.ecgY[idx_orig];
+        var val = y_rel * (w / 491); // scaled amplitude
+        
+        // Color zones from the new video:
+        // Zone 1 (0 to 244): Pink/Magenta
+        var color = '#FF2975'; 
+        var dimColor = '#69005D';
+        
+        // Zone 2 (245 to 342): Cyan/Blue
+        if (idx_orig >= 245 && idx_orig < 343) {
+          color = '#00E5FF';
+          dimColor = '#535E7F';
+        } 
+        // Zone 3 (343 to 491): Green/Teal
+        else if (idx_orig >= 343) {
+          color = '#00E676';
+          dimColor = '#286B60';
         }
-      } else if (345 > x_orig) {
-        val = -13 * Math.sin((x_orig - 328) / 17 * Math.PI);
-      } else {
-        val = 52 * Math.sin((x_orig - 345) / 35 * Math.PI);
-      }
-      var scale = w / 576;
-      return 0 - val * scale;
-    };
-
-    g.drawEcgPath = function(ctx, x1, x2, w, yPulse) {
-      var xStart = Math.floor(160 * w / 576);
-      var xEnd = Math.floor(380 * w / 576);
-
-      ctx.moveTo(x1, yPulse + g.getEcgY(x1, w));
-
-      if (x1 >= xEnd || xStart >= x2) {
-        ctx.lineTo(x2, yPulse + g.getEcgY(x2, w));
-        return;
-      }
-
-      if (xStart > x1) {
-        ctx.lineTo(xStart, yPulse);
-      }
-
-      var startLoop = x1 > xStart ? x1 : xStart;
-      var endLoop = xEnd > x2 ? x2 : xEnd;
-
-      startLoop = Math.floor(startLoop / 8) * 8 + 8;
-
-      for (var x = startLoop; endLoop > x; x += 8) {
-        ctx.lineTo(x, yPulse + g.getEcgY(x, w));
-      }
-
-      ctx.lineTo(endLoop, yPulse + g.getEcgY(endLoop, w));
-
-      if (x2 > xEnd) {
-        ctx.lineTo(x2, yPulse);
+        
+        var idx = x / 4;
+        g.ecgYCache[idx] = -val;
+        g.ecgColorCache[idx] = color;
+        g.ecgColorDimCache[idx] = dimColor;
       }
     };
 
@@ -69,6 +56,11 @@
 
       var cx = w / 2;
       var cy = w / 2;
+
+      // Initialize cache if needed
+      if (!g.ecgYCache || g.ecgCacheWidth !== w) {
+        g.initEcgCache(w);
+      }
 
       // Fondo negro base
       ctx.fillStyle = '#111111';
@@ -107,23 +99,77 @@
       var cycleTicks = 15; 
       var currentTick = g.animTick % cycleTicks;
       var sweepX = (currentTick / cycleTicks) * w;
-      
-      // Draw left segment (active neon sweep)
-      ctx.lineWidth = 5;
-      ctx.strokeStyle = '#36E4FF';
-      ctx.beginPath();
       var sweepX_nearest = Math.round(sweepX / 4) * 4;
       if (sweepX_nearest >= w) sweepX_nearest = Math.floor(w / 4) * 4;
       if (0 > sweepX_nearest) sweepX_nearest = 0;
-      g.drawEcgPath(ctx, 0, sweepX_nearest, w, yPulse);
-      ctx.stroke();
+
+      var totalTailLength = 160; // Make it a bit longer to ensure a smooth fade (120-160px)
+      var neonLength = 60; // Bright portion length
+      var tailStart = Math.max(0, sweepX_nearest - totalTailLength);
+      var neonStart = Math.max(0, sweepX_nearest - neonLength);
+
+      // Draw dim fading background (shadow) ONLY from tailStart to neonStart
+      ctx.lineWidth = 3; // Finer for background shadow
+      var lastColorDim = '';
+      var lastYDim = null;
+      for (var x = tailStart; neonStart >= x; x += 4) {
+        var idx = x / 4;
+        var cDim = g.ecgColorDimCache[idx] || '#690067';
+        var cachedY = g.ecgYCache[idx] || 0;
+        
+        if (cDim !== lastColorDim) {
+          if (lastColorDim !== '') ctx.stroke();
+          ctx.beginPath();
+          ctx.strokeStyle = cDim;
+          if (lastColorDim !== '' && lastYDim !== null) {
+            ctx.moveTo(x - 4, yPulse + lastYDim);
+            ctx.lineTo(x, yPulse + cachedY);
+          } else {
+            ctx.moveTo(x, yPulse + cachedY);
+          }
+          lastColorDim = cDim;
+        } else {
+          ctx.lineTo(x, yPulse + cachedY);
+        }
+        lastYDim = cachedY;
+      }
+      if (lastColorDim !== '') ctx.stroke();
+
+      // Draw active neon sweep tail from neonStart to sweepX_nearest
+      ctx.lineWidth = 5;
+      var lastColorActive = '';
+      var lastYActive = null;
+      for (var x = neonStart; sweepX_nearest >= x; x += 4) {
+        var idx = x / 4;
+        var cActive = g.ecgColorCache[idx] || '#FF2975';
+        var cachedY = g.ecgYCache[idx] || 0;
+        
+        if (cActive !== lastColorActive) {
+          if (lastColorActive !== '') ctx.stroke();
+          ctx.beginPath();
+          ctx.strokeStyle = cActive;
+          if (lastColorActive !== '' && lastYActive !== null) {
+            ctx.moveTo(x - 4, yPulse + lastYActive);
+            ctx.lineTo(x, yPulse + cachedY);
+          } else {
+            ctx.moveTo(x, yPulse + cachedY);
+          }
+          lastColorActive = cActive;
+        } else {
+          ctx.lineTo(x, yPulse + cachedY);
+        }
+        lastYActive = cachedY;
+      }
+      if (lastColorActive !== '') ctx.stroke();
 
       // Draw glowing white head dot at sweepX_nearest
       if (sweepX_nearest >= 0) {
-        var headY = yPulse + g.getEcgY(sweepX_nearest, w);
+        var idx_head = sweepX_nearest / 4;
+        var headY = yPulse + (g.ecgYCache[idx_head] || 0);
+        var headColor = g.ecgColorCache[idx_head] || '#FF2975';
         ctx.fillStyle = '#FFFFFF';
         ctx.lineWidth = 1.5;
-        ctx.strokeStyle = '#36E4FF';
+        ctx.strokeStyle = headColor;
         ctx.beginPath();
         ctx.arc(sweepX_nearest, headY, 4, 0, Math.PI * 2);
         ctx.fill();
