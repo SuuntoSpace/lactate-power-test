@@ -149,8 +149,15 @@ var calculateThresholds = function () {
   if (stage_results.length > 0) { lt1_hr = stage_results[0].hr; lt1_pace = stage_results[0].pace; }
   for (var i = 0; i < stage_results.length; i++) {
     var sr = stage_results[i];
-    if (f1 === 0 && i <= 1 && sr.dec > 5.0) { lt1_hr = sr.hr; lt1_pace = sr.pace; f1 = 1; }
-    if (f2 === 0 && (sr.dec > 10.0 || i === stage_results.length - 1)) { lt2_hr = sr.hr; lt2_pace = sr.pace; f2 = 1; }
+    if (f1 === 0 && i <= 1 && sr.dec > 5.0) { 
+      lt1_hr = sr.hr; lt1_pace = sr.pace; f1 = 1; 
+    } else if (f2 === 0 && f1 === 1 && (sr.dec > 10.0 || i === stage_results.length - 1)) { 
+      lt2_hr = sr.hr; lt2_pace = sr.pace; f2 = 1; 
+    }
+  }
+  if (f2 === 0 && stage_results.length > 0) {
+    lt2_hr = stage_results[stage_results.length - 1].hr;
+    lt2_pace = stage_results[stage_results.length - 1].pace;
   }
   if (lt2_hr < lt1_hr) { lt2_hr = lt1_hr; lt2_pace = lt1_pace; }
 };

@@ -1,11 +1,11 @@
 {
-  "name": "Dual Threshold",
+  "name": "Lactate & Power Test",
   "version": "1.0",
   "author": "Joaquin Pérez & Oscar Muñoz Ferriz",
   "description": "Guided LT1/LT2 lactate threshold",
   "type": "feature",
   "usage": "workout",
-  "modificationTime": 1780681223,
+  "modificationTime": 1781631205,
   "in": [
     {
       "name": "HeartRate",
