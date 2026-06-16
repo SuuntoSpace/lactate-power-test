@@ -1,6 +1,6 @@
-# SuuntoPlus™ Dual Threshold App
+# SuuntoPlus™ Lactate & Power Test App
 
-**Dual Threshold** is a sports app for Suunto watches designed to estimate your lactate thresholds: **LT1 (Aerobic Threshold)** and **LT2 (Anaerobic Threshold)**, along with their corresponding pace and power, in a guided, reliable, and straightforward manner.
+**Lactate & Power Test** is a sports app for Suunto watches designed to estimate your lactate thresholds: **LT1 (Aerobic Threshold)** and **LT2 (Anaerobic Threshold)**, along with their corresponding pace and power, in a guided, reliable, and straightforward manner.
 
 The app analyzes **aerobic decoupling (pace vs. heart rate)** by comparing the first half and the second half of each stable phase of the test to estimate the deflections of the LT1 and LT2 thresholds, using your heart rate zones configured on the watch (based on your `MaxHR`).
 
