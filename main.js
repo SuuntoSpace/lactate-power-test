@@ -9,7 +9,7 @@ var lt1_hr, lt1_pace, lt2_hr, lt2_pace, lt2_power;
 var h1_hrSum, h1_spdSum, h1_count, h1_spdCount;
 var h2_hrSum, h2_spdSum, h2_count, h2_spdCount;
 var h3_pwrSum, h3_pwrCount, stage_results;
-var zs_active, dfa_current, debugTimer, outOfRangeSeconds, alertShowTimer;
+var zs_active, dfa_current, debugTimer, outOfRangeSeconds, alertShowTimer, wasOutOfRange;
 var countdownValue = 6, isCountdownActive = 0;
 var WARMUP_DUR = 600, STAGE_1_DUR = 600, STAGE_2_DUR = 600, STAGE_3_DUR = 600, STAGE_4_DUR = 300, COOLDOWN_DUR = 300;
 
@@ -21,7 +21,7 @@ var resetApp = function () {
   h1_hrSum = 0; h1_spdSum = 0; h1_count = 0; h1_spdCount = 0;
   h2_hrSum = 0; h2_spdSum = 0; h2_count = 0; h2_spdCount = 0;
   h3_pwrSum = 0; h3_pwrCount = 0; stage_results = [];
-  zs_active = 0; dfa_current = 0; debugTimer = 0; isPaused = 0;
+  zs_active = 0; dfa_current = 0; debugTimer = 0; isPaused = 0; wasOutOfRange = 0;
   outOfRangeSeconds = 0; alertShowTimer = 0;
 };
 
@@ -231,6 +231,8 @@ function evaluate(input, output) {
   // ===================================
   if (state !== STATE_DONE && hr > 0 && tLow > 0) {
     if (hr < Math.round(tLow) || hr > Math.round(tHigh)) {
+      // Fuera de zona
+      wasOutOfRange = 1;
       if (currentTemplate !== 'alert') {
         outOfRangeSeconds++;
         if (outOfRangeSeconds >= 20) {
@@ -242,10 +244,17 @@ function evaluate(input, output) {
         }
       }
     } else {
+      // Dentro de zona
       outOfRangeSeconds = 0;
+      if (wasOutOfRange === 1) {
+        // Transición: acaba de volver a zona → pitido de confirmación
+        playIndication("Confirm");
+        wasOutOfRange = 0;
+      }
     }
   } else {
     outOfRangeSeconds = 0;
+    wasOutOfRange = 0;
   }
   // ===================================
 
